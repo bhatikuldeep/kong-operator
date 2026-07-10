@@ -75,6 +75,9 @@ func GetFromParametersRef(
 }
 
 // IsGatewayHybrid returns true if the GatewayConfiguration specifies the gateway to be a Konnect hybrid gateway.
+// A gateway is hybrid when either spec.konnect is set (legacy path) or spec.extensions contains a KonnectExtension
+// reference (new path introduced in KGO 2.2, enforced mutually exclusive with spec.konnect by CEL rule #4213).
 func IsGatewayHybrid(gwConfig *gwtypes.GatewayConfiguration) bool {
-	return gwConfig.Spec.Konnect != nil && gwConfig.Spec.Konnect.APIAuthConfigurationRef != nil
+	return (gwConfig.Spec.Konnect != nil && gwConfig.Spec.Konnect.APIAuthConfigurationRef != nil) ||
+		len(gwConfig.Spec.Extensions) > 0
 }
